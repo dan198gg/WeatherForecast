@@ -28,51 +28,51 @@ import okhttp3.Response
 import okio.IOException
 
 class MainActivity : ComponentActivity() {
-    val REQUEST_URL="https://api.openweathermap.org/data/2.5/"
+    val REQUEST_URL = "https://api.openweathermap.org/data/2.5/"
+    var temp = mutableStateOf<String>("")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Text(text = getWeatherData())
+            getWeatherData()
+            Text(text = temp.value)
         }
     }
+
     @Composable
-    fun getWeatherData():String{
-        var temp by remember {
-            mutableStateOf("")
-        }
-        val testLat=43.07
-        val testLon=131.54
-        val request=Request.Builder()
-            .url(REQUEST_URL+"weather?lat=$testLat&lon=$testLon&appid=${Untracked.API_KEY}&units=metric").build()
-        ClientSingleTon.OK_HTTP_CLIENT.newCall(request).enqueue(object:Callback {
+    fun getWeatherData(){
+        val testLat = 43.07
+        val testLon = 131.54
+        val request = Request.Builder()
+            .url(REQUEST_URL + "weather?lat=$testLat&lon=$testLon&appid=${Untracked.API_KEY}&units=metric")
+            .build()
+        ClientSingleTon.OK_HTTP_CLIENT.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-               Log.e("ONFAULURE",e.message.toString())
+                Log.e("ONFAULURE", e.message.toString())
                 e.printStackTrace()
             }
 
             override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful){
-                    Log.e("IODANIIL","IOEX")
+                if (!response.isSuccessful) {
+                    Log.e("IODANIIL", "IOEX")
                     throw IOException()
                 }
-                val jsonData=response.body.string()
-                Log.i("RESPONSEBODY",jsonData)
+                val jsonData = response.body.string()
+                Log.i("RESPONSEBODY", jsonData)
                 try {
-                    val moshi= Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-                    val jsonAdapter=moshi.adapter(WeatherData::class.java)
-                    val weatherData=jsonAdapter.fromJson(jsonData)
-                    Log.i("TEMP",weatherData!!.main.temp.toString())
-                    temp=weatherData!!.main.temp.toString()
-                }
-                catch (ex:Exception){
-                    Log.e("JSONCONVERTERROR","ERROR")
+                    val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+                    val jsonAdapter = moshi.adapter(WeatherData::class.java)
+                    val weatherData = jsonAdapter.fromJson(jsonData)
+                    Log.i("TEMP", weatherData!!.main.temp.toString())
+                    temp.value = weatherData!!.main.temp.toString()
+                } catch (ex: Exception) {
+                    Log.e("JSONCONVERTERROR", "ERROR")
                 }
 
             }
 
         })
-        return temp
     }
 }
+
 
