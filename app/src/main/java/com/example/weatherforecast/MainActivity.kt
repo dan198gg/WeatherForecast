@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.weatherforecast.supersecurityprivatesafe.Untracked
@@ -29,10 +33,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            getWeatherData()
+            Text(text = getWeatherData())
         }
     }
-    fun getWeatherData(){
+    @Composable
+    fun getWeatherData():String{
+        var temp by remember {
+            mutableStateOf("")
+        }
         val testLat=43.07
         val testLon=131.54
         val request=Request.Builder()
@@ -55,13 +63,16 @@ class MainActivity : ComponentActivity() {
                     val jsonAdapter=moshi.adapter(WeatherData::class.java)
                     val weatherData=jsonAdapter.fromJson(jsonData)
                     Log.i("TEMP",weatherData!!.main.temp.toString())
+                    temp=weatherData!!.main.temp.toString()
                 }
                 catch (ex:Exception){
                     Log.e("JSONCONVERTERROR","ERROR")
                 }
+
             }
 
         })
+        return temp
     }
 }
 
