@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,27 +27,32 @@ import okhttp3.Callback
 import okhttp3.Request
 import okhttp3.Response
 import okio.IOException
+import java.net.InetSocketAddress
+import java.net.Socket
 
 class MainActivity : ComponentActivity() {
     val REQUEST_URL = "https://api.openweathermap.org/data/2.5/"
-    var temp = mutableStateOf<String>("")
+    var temp by mutableStateOf<String>("")
+    var testLat by mutableStateOf(43.07)
+    val testLon by mutableStateOf(131.54)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             getWeatherData()
-            Text(text = temp.value)
+            Text(text = temp)
         }
     }
 
     @Composable
     fun getWeatherData(){
-        val testLat = 43.07
-        val testLon = 131.54
+
         val request = Request.Builder()
             .url(REQUEST_URL + "weather?lat=$testLat&lon=$testLon&appid=${Untracked.API_KEY}&units=metric")
             .build()
+        request
         ClientSingleTon.OK_HTTP_CLIENT.newCall(request).enqueue(object : Callback {
+
             override fun onFailure(call: Call, e: IOException) {
                 Log.e("ONFAULURE", e.message.toString())
                 e.printStackTrace()
@@ -54,6 +60,7 @@ class MainActivity : ComponentActivity() {
 
             override fun onResponse(call: Call, response: Response) {
                 if (!response.isSuccessful) {
+                    Log.e("RESP",response.code.toString())
                     Log.e("IODANIIL", "IOEX")
                     throw IOException()
                 }
@@ -64,15 +71,19 @@ class MainActivity : ComponentActivity() {
                     val jsonAdapter = moshi.adapter(WeatherData::class.java)
                     val weatherData = jsonAdapter.fromJson(jsonData)
                     Log.i("TEMP", weatherData!!.main.temp.toString())
-                    temp.value = weatherData!!.main.temp.toString()
+                    temp = weatherData!!.main.temp.toString()
                 } catch (ex: Exception) {
-                    Log.e("JSONCONVERTERROR", "ERROR")
+                    Log.e("JSONCONVERTERROR", ex.message.toString())
                 }
 
             }
 
         })
     }
+    @Composable
+    fun TextFie1ld() {
+//        TextField(value = testLat, onValueChange = {testLat=it})
 }
+    }
 
 
