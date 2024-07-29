@@ -5,8 +5,11 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -16,7 +19,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.weatherforecast.supersecurityprivatesafe.Untracked
 import com.example.weatherforecast.ui.theme.WeatherForecastTheme
 import com.example.weatherforecast.weatherdata.WeatherData
@@ -34,23 +39,23 @@ class MainActivity : ComponentActivity() {
     val REQUEST_URL = "https://api.openweathermap.org/data/2.5/"
     var temp by mutableStateOf<String>("")
     var testLat by mutableStateOf(43.07)
-    val testLon by mutableStateOf(131.54)
+    var testLon by mutableStateOf(131.54)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            getWeatherData()
-            Text(text = temp)
+            Column {
+                TextFie1ld()
+                Text(text = temp)
         }
+            }
     }
 
-    @Composable
     fun getWeatherData(){
 
         val request = Request.Builder()
             .url(REQUEST_URL + "weather?lat=$testLat&lon=$testLon&appid=${Untracked.API_KEY}&units=metric")
             .build()
-        request
         ClientSingleTon.OK_HTTP_CLIENT.newCall(request).enqueue(object : Callback {
 
             override fun onFailure(call: Call, e: IOException) {
@@ -82,8 +87,16 @@ class MainActivity : ComponentActivity() {
     }
     @Composable
     fun TextFie1ld() {
-//        TextField(value = testLat, onValueChange = {testLat=it})
-}
+        Card(modifier = Modifier.padding(50.dp)) {
+            Column {
+            TextField(value = testLat.toString(), onValueChange = { testLat = it.toDouble() })
+            TextField(value = testLon.toString(), onValueChange = { testLon = it.toDouble() }, modifier = Modifier.padding(0.dp,30.dp))
+                Button(onClick = { getWeatherData() }) {
+                    Text(text = "Посмотреть погоду")
+                }
+            }
+        }
     }
+}
 
 
