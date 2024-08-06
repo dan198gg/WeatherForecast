@@ -1,10 +1,12 @@
 package com.example.weatherforecast
 
 import android.os.Bundle
+import android.text.Layout.Alignment
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -87,11 +89,12 @@ class MainActivity : ComponentActivity() {
     }
     @Composable
     fun TextFie1ld() {
-        Card(modifier = Modifier.padding(50.dp)) {
+        Box(modifier = Modifier.fillMaxSize(),
+            contentAlignment = androidx.compose.ui.Alignment.Center){
             Column {
             TextField(value = testLat.toString(), onValueChange = { testLat = it.toDouble() })
             TextField(value = testLon.toString(), onValueChange = { testLon = it.toDouble() }, modifier = Modifier.padding(0.dp,30.dp))
-                Button(onClick = { getWeatherData() }) {
+                Button(onClick = { getWeatherData() }, modifier = Modifier.padding(0.dp,30.dp)) {
                     Text(text = "Посмотреть погоду")
                 }
             }
